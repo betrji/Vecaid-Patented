@@ -1,0 +1,35 @@
+# Vecaid — Python dependencies
+# Python 3.10+
+# Install: pip install -r requirements.txt
+
+# Web framework
+flask>=3.0,<4.0
+flask-limiter>=3.5,<4.0
+gunicorn>=21.2,<23.0
+
+# Data fetching
+yfinance>=0.2.40,<0.3.0
+pandas>=2.1,<3.0
+numpy>=1.26,<2.0
+
+# Machine learning
+tensorflow==2.10.0
+scikit-learn>=1.4,<2.0
+xgboost>=2.0,<3.0
+bayesian-optimization>=1.5,<2.0
+
+# Preprocessing / serialisation
+joblib>=1.3,<2.0
+scipy>=1.12,<2.0
+python-dateutil>=2.9
+
+# Charting (server-side, Agg backend)
+matplotlib>=3.8,<4.0
+
+# Sentiment (optional — set SENTIMENT_ENABLED=1 to activate)
+vaderSentiment>=3.3
+beautifulsoup4>=4.12
+requests>=2.31
+
+# Environment variables
+python-dotenv>=1.0

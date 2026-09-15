@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vecaid — Results for {{ results.ticker }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rose-gold: linear-gradient(135deg, #FFECF3 0%, #C4867F 100%);
+            --bg: #0D0E0D;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --text: #ffffff;
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.55;
+            padding: 2rem 1rem 4rem;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: var(--rose-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            background: var(--rose-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 0.65rem;
+        }
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.65rem 0.9rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item:nth-child(odd) { background: rgba(255,255,255,0.02); }
+
+        .result-label { color: var(--muted); }
+        .result-value { font-weight: 600; color: #d1fae5; }
+        .result-value.up   { color: #34d399; }
+        .result-value.down { color: #f87171; }
+
+        .confidence-bar-wrap {
+            background: rgba(255,255,255,0.08);
+            border-radius: 99px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.35rem;
+        }
+
+        .confidence-bar {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #FFECF3, #C4867F);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+        }
+        .metric-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.25rem; }
+        .metric-value { font-size: 1.1rem; font-weight: 700; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.73rem;
+            color: var(--muted);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            padding: 0.22rem 0.65rem;
+            margin: 0 0.3rem 0.3rem 0;
+        }
+        .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
+
+        .plot { margin: 1.25rem 0; }
+        .plot img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+        }
+
+        .error-box {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.25);
+            color: #fca5a5;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+        }
+
+        .disclaimer {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            font-size: 0.76rem;
+            color: var(--muted);
+            line-height: 1.65;
+            margin-bottom: 1.5rem;
+        }
+        .disclaimer strong { color: rgba(255,255,255,0.5); }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.7rem 1.4rem;
+            background: linear-gradient(135deg, #FFECF3, #C4867F);
+            color: #1a0a08;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(196,134,127,0.35);
+        }
+
+        .text-center { text-align: center; }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 1.6rem; }
+            .section { padding: 1.25rem; }
+            .metrics-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>{{ results.ticker }}</h1>
+        <p class="subtitle">Next-day price direction analysis</p>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong> Vecaid is an educational and research tool.
+            These predictions are generated by machine learning models and are
+            <strong>not financial advice</strong>.
+            Stock prices are inherently unpredictable; no model can reliably forecast them.
+            Never make investment decisions based solely on these outputs.
+            All accuracy metrics are measured on held-out data not used during training —
+            past performance does not guarantee future results.
+        </div>
+
+        <!-- ================================================================
+             ML PREDICTION
+             ================================================================ -->
+        <div class="section">
+            <h2>ML Ensemble Prediction</h2>
+
+            {% if results.ml_prediction.error %}
+                <div class="error-box">{{ results.ml_prediction.error }}</div>
+            {% else %}
+                {% set p = results.ml_prediction %}
+
+                <!-- Metadata badges -->
+                <div style="margin-bottom:1rem;">
+                    {% if p.model_version %}<span class="badge"><span class="dot"></span>Model v{{ p.model_version }}</span>{% endif %}
+                    {% if p.model_trained_at %}<span class="badge">Trained {{ p.model_trained_at }}</span>{% endif %}
+                    {% if p.from_cache %}<span class="badge">Cached ({{ (600 // 60) }}min TTL)</span>{% endif %}
+                    {% if p.model_metrics and p.model_metrics.oof_directional_accuracy_pct is defined %}
+                    <span class="badge">OOF accuracy: {{ p.model_metrics.oof_directional_accuracy_pct | round(1) }}%</span>
+                    {% endif %}
+                </div>
+
+                <div style="border-radius:12px;overflow:hidden;margin-bottom:1.25rem;">
+                    <div class="result-item">
+                        <span class="result-label">Predicted Direction</span>
+                        <span class="result-value {% if p.prediction == 'higher' %}up{% else %}down{% endif %}">
+                            {% if p.prediction == 'higher' %}&#9650; Higher{% else %}&#9660; Lower{% endif %}
+                        </span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Predicted Price</span>
+                        <span class="result-value">${{ p.predicted_price | round(2) }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Current Price</span>
+                        <span class="result-value">${{ p.current_price | round(2) }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Predicted Difference</span>
+                        <span class="result-value {% if p.predicted_difference >= 0 %}up{% else %}down{% endif %}">
+                            {{ '+' if p.predicted_difference >= 0 else '' }}${{ p.predicted_difference | round(2) }}
+                        </span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Predicted % Move</span>
+                        <span class="result-value {% if p.predicted_pct_move >= 0 %}up{% else %}down{% endif %}">
+                            {{ '+' if p.predicted_pct_move >= 0 else '' }}{{ p.predicted_pct_move | round(2) }}%
+                        </span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Predicted Date</span>
+                        <span class="result-value">{{ p.predicted_date }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Model Confidence</span>
+                        <span class="result-value">{{ p.confidence_percentage | round(1) }}%</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Ensemble Std Dev</span>
+                        <span class="result-value" title="Std across 7 base model predictions — lower = more agreement">
+                            {{ p.ensemble_std | round(3) }}%
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Confidence bar -->
+                <div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.76rem;color:var(--muted);margin-bottom:0.3rem;">
+                        <span>Model Confidence (inverse of ensemble disagreement)</span>
+                        <span>{{ p.confidence_percentage | round(1) }}%</span>
+                    </div>
+                    <div class="confidence-bar-wrap">
+                        <div class="confidence-bar" style="width:{{ [p.confidence_percentage, 100] | min }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Training metrics -->
+                {% if p.model_metrics %}
+                <div style="margin-top:1.5rem;">
+                    <h3>Training Metrics — all computed on held-out OOF data, never training data</h3>
+                    <div class="metrics-grid">
+                        {% if p.model_metrics.oof_rmse_pct is defined %}
+                        <div class="metric-card">
+                            <div class="metric-label">OOF RMSE (% move)</div>
+                            <div class="metric-value">{{ p.model_metrics.oof_rmse_pct }}%</div>
+                        </div>
+                        {% endif %}
+                        {% if p.model_metrics.oof_directional_accuracy_pct is defined %}
+                        <div class="metric-card">
+                            <div class="metric-label">OOF Directional Accuracy</div>
+                            <div class="metric-value">{{ p.model_metrics.oof_directional_accuracy_pct }}%</div>
+                        </div>
+                        {% endif %}
+                        {% if p.model_metrics.meta_last_fold_rmse is defined and p.model_metrics.meta_last_fold_rmse %}
+                        <div class="metric-card">
+                            <div class="metric-label">Meta-model Last Fold RMSE</div>
+                            <div class="metric-value">{{ p.model_metrics.meta_last_fold_rmse }}%</div>
+                        </div>
+                        {% endif %}
+                        {% if p.model_metrics.n_training_samples is defined %}
+                        <div class="metric-card">
+                            <div class="metric-label">Training Samples</div>
+                            <div class="metric-value">{{ p.model_metrics.n_training_samples }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- ================================================================
+             WALK-FORWARD BACKTEST
+             ================================================================ -->
+        <div class="section">
+            <h2>Walk-Forward Backtest</h2>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1.1rem;">
+                The pre-trained model is applied to the most recent 60 trading days.
+                No test-period data was used during model training.
+            </p>
+
+            {% if results.backtest.error %}
+                <div class="error-box">{{ results.backtest.error }}</div>
+            {% elif results.backtest.stats %}
+                <div class="metrics-grid" style="margin-bottom:1.25rem;">
+                    {% for key, value in results.backtest.stats.items() %}
+                        {% if key != 'note' %}
+                        <div class="metric-card">
+                            <div class="metric-label">{{ key.replace('_', ' ').replace('%', '%%').title() }}</div>
+                            <div class="metric-value">
+                                {% if value is number %}{{ value | round(3) }}{% else %}{{ value }}{% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if results.backtest.stats.note %}
+                <p style="font-size:0.74rem;color:var(--muted);margin-bottom:1rem;">
+                    {{ results.backtest.stats.note }}
+                </p>
+                {% endif %}
+
+                {% if results.backtest.plot_pred_vs_actual %}
+                <div class="plot">
+                    <h3>Predicted vs Actual % Moves</h3>
+                    <img src="data:image/png;base64,{{ results.backtest.plot_pred_vs_actual }}"
+                         alt="Predicted vs Actual % Moves" loading="lazy">
+                </div>
+                {% endif %}
+
+                {% if results.backtest.plot_price_comparison %}
+                <div class="plot">
+                    <h3>Predicted vs Actual Price</h3>
+                    <img src="data:image/png;base64,{{ results.backtest.plot_price_comparison }}"
+                         alt="Predicted vs Actual Price" loading="lazy">
+                </div>
+                {% endif %}
+
+            {% else %}
+                <div class="error-box">
+                    No backtest data available. Run
+                    <code>python train.py --ticker {{ results.ticker }}</code>
+                    to generate a trained model.
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="text-center">
+            <a href="/" class="back-btn">&#8592; New Prediction</a>
+        </div>
+
+    </div>
+</body>
+</html>
